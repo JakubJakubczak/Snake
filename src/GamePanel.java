@@ -20,6 +20,7 @@ public class GamePanel extends JPanel implements ActionListener{
     boolean running = false;
     Timer timer;
     Random random;
+    JButton backToMenu;
 
     GamePanel(){
         random = new Random();
@@ -144,6 +145,31 @@ public class GamePanel extends JPanel implements ActionListener{
         g.setFont( new Font("Ink Free",Font.BOLD, 75));
         FontMetrics metrics2 = getFontMetrics(g.getFont());
         g.drawString("Game Over", (SCREEN_WIDTH - metrics2.stringWidth("Game Over"))/2, SCREEN_HEIGHT/2);
+        //Button to back to menu
+        if (backToMenu == null) {
+            // Button to back to menu
+            backToMenu = new JButton("Back to menu");
+            backToMenu.setBackground(Color.BLACK);
+            backToMenu.setForeground(Color.WHITE);
+            backToMenu.setFocusPainted(false);
+            backToMenu.setFont(new Font("Tahoma", Font.BOLD, 16));
+            backToMenu.setBounds((SCREEN_WIDTH - 150) / 2, SCREEN_HEIGHT / 2 + 100, 150, 50); // Position the button
+
+            // Add action listeners
+            backToMenu.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    new GameMenu().setVisible(true);
+                    JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(GamePanel.this);
+                    topFrame.dispose(); // Close the current game window
+                }
+            });
+
+            this.setLayout(null); // Use absolute positioning for the button
+            this.add(backToMenu);
+            this.revalidate();
+            this.repaint();
+
+        }
     }
     @Override
     public void actionPerformed(ActionEvent e) {
