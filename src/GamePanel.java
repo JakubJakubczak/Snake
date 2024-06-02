@@ -8,20 +8,14 @@ public class GamePanel extends JPanel implements ActionListener{
     static final int SCREEN_WIDTH = 600;
     static final int SCREEN_HEIGHT = 600;
     static final int UNIT_SIZE = 25;
-    static final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/(UNIT_SIZE*UNIT_SIZE);
+    static final int sizeY = SCREEN_HEIGHT/UNIT_SIZE;
+    static final int sizeX = SCREEN_WIDTH/UNIT_SIZE;
     static final int DELAY = 75;
-////    final int x[] = new int[GAME_UNITS];
-////    final int y[] = new int[GAME_UNITS];
-//    int bodyParts = 6;
-//    int applesEaten;
-//    int appleX;
-//    int appleY;
-//    char direction = 'R';
-//    boolean running = false;
+    int[][] board = new int[sizeX][sizeY];
     private Apple apple;
     private Frog frog;
     private Snake playerSnake;
-    private SnakeAI aiSnake;
+    //private SnakeAI aiSnake;
     Timer timer;
     Random random;
     JButton backToMenu;
@@ -35,14 +29,15 @@ public class GamePanel extends JPanel implements ActionListener{
         startGame();
     }
     public void startGame() {
-        apple = new Apple(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE);
+        apple = new Apple(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE, board);
         frog = new Frog(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE);
-        playerSnake = new Snake(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE, apple, frog);
-        aiSnake = new SnakeAI(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE, apple, frog, playerSnake);
+        playerSnake = new Snake(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE, board);
+        //aiSnake = new SnakeAI(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE, apple, frog, playerSnake);
 
+        apple.start();
         new Thread(frog).start();
         playerSnake.start();
-        aiSnake.start();
+        //aiSnake.start();
 
         timer = new Timer(DELAY,this);
         timer.start();
@@ -53,115 +48,59 @@ public class GamePanel extends JPanel implements ActionListener{
     }
     public void draw(Graphics g) {
 
-        if(playerSnake.isAlive() && aiSnake.isAlive()) {
-			/*
-			for(int i=0;i<SCREEN_HEIGHT/UNIT_SIZE;i++) {
-				g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
-				g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
-			}
-			*/
-            g.setColor(Color.red);
-            g.fillOval(apple.getX(), apple.getY(), UNIT_SIZE, UNIT_SIZE);
+        if(playerSnake.getRunning()) {
+            apple.draw(g);
+            frog.draw(g);
+            playerSnake.draw(g);
 
-            g.setColor(Color.green);
-            g.fillRect(frog.getX(), frog.getY(), UNIT_SIZE, UNIT_SIZE);
-
-            for (int i = 0; i < playerSnake.getBodyParts(); i++) {
-                if (i == 0) {
-                    g.setColor(Color.blue);
-                    g.fillRect(playerSnake.getX(i), playerSnake.getY(i), UNIT_SIZE, UNIT_SIZE);
-                } else {
-                    g.setColor(new Color(0, 100, 255));
-                    g.fillRect(playerSnake.getX(i), playerSnake.getY(i), UNIT_SIZE, UNIT_SIZE);
-                }
-            }
-
-            for (int i = 0; i < aiSnake.getBodyParts(); i++) {
-                if (i == 0) {
-                    g.setColor(Color.red);
-                    g.fillRect(aiSnake.getX(i), aiSnake.getY(i), UNIT_SIZE, UNIT_SIZE);
-                } else {
-                    g.setColor(new Color(255, 100, 0));
-                    g.fillRect(aiSnake.getX(i), aiSnake.getY(i), UNIT_SIZE, UNIT_SIZE);
-                }
-            }
+//            // Print the top border
+//            System.out.print("  "); // Space for row labels
+//            for (int j = 0; j < sizeY; j++) {
+//                System.out.print("  " + j + " ");
+//            }
+//            System.out.println();
+//
+//            // Print each row
+//            for (int i = 0; i < sizeX; i++) {
+//                System.out.print(i + " "); // Row label
+//                for (int j = 0; j < sizeY; j++) {
+//                    System.out.print("| " + board[i][j] + " ");
+//                }
+//                System.out.println("|");
+//
+//                // Print the row separator
+//                System.out.print("  "); // Space for row labels
+//                for (int j = 0; j < sizeY; j++) {
+//                    System.out.print("----");
+//                }
+//                System.out.println("-");
+//            }
+//            for (int i = 0; i < aiSnake.getBodyParts(); i++) {
+//                if (i == 0) {
+//                    g.setColor(Color.red);
+//                    g.fillRect(aiSnake.getX(i), aiSnake.getY(i), UNIT_SIZE, UNIT_SIZE);
+//                } else {
+//                    g.setColor(new Color(255, 100, 0));
+//                    g.fillRect(aiSnake.getX(i), aiSnake.getY(i), UNIT_SIZE, UNIT_SIZE);
+//                }
+//            }
 
             g.setColor(Color.red);
             g.setFont( new Font("Ink Free",Font.BOLD, 40));
             FontMetrics metrics = getFontMetrics(g.getFont());
             g.drawString("Score: "+playerSnake.getScore(), (SCREEN_WIDTH - metrics.stringWidth("Score: "+playerSnake.getScore()))/2, g.getFont().getSize());
 
-            g.setColor(Color.BLUE);
-            g.setFont( new Font("Ink Free",Font.BOLD, 40));
-            FontMetrics metrics2 = getFontMetrics(g.getFont());
-            g.drawString("Score for AI: "+aiSnake.getScore(), (SCREEN_WIDTH - metrics2.stringWidth("Score for AI: "+aiSnake.getScore()))/2, g.getFont().getSize());
+//            g.setColor(Color.BLUE);
+//            g.setFont( new Font("Ink Free",Font.BOLD, 40));
+//            FontMetrics metrics2 = getFontMetrics(g.getFont());
+//            g.drawString("Score for AI: "+aiSnake.getScore(), (SCREEN_WIDTH - metrics2.stringWidth("Score for AI: "+aiSnake.getScore()))/2, g.getFont().getSize());
         }
         else {
             gameOver(g);
         }
 
     }
-//    public void newApple(){
-//        appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE;
-//        appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE))*UNIT_SIZE;
-//    }
-//    public void move(){
-//        for(int i = bodyParts;i>0;i--) {
-//            x[i] = x[i-1];
-//            y[i] = y[i-1];
-//        }
-//
-//        switch(direction) {
-//            case 'U':
-//                y[0] = y[0] - UNIT_SIZE;
-//                break;
-//            case 'D':
-//                y[0] = y[0] + UNIT_SIZE;
-//                break;
-//            case 'L':
-//                x[0] = x[0] - UNIT_SIZE;
-//                break;
-//            case 'R':
-//                x[0] = x[0] + UNIT_SIZE;
-//                break;
-//        }
-//
-//    }
-//    public void checkApple() {
-//        if((x[0] == appleX) && (y[0] == appleY)) {
-//            bodyParts++;
-//            applesEaten++;
-//            newApple();
-//        }
-//    }
-//    public void checkCollisions() {
-//        //checks if head collides with body
-//        for(int i = bodyParts;i>0;i--) {
-//            if((x[0] == x[i])&& (y[0] == y[i])) {
-//                running = false;
-//            }
-//        }
-//        //check if head touches left border
-//        if(x[0] < 0) {
-//            running = false;
-//        }
-//        //check if head touches right border
-//        if(x[0] > SCREEN_WIDTH) {
-//            running = false;
-//        }
-//        //check if head touches top border
-//        if(y[0] < 0) {
-//            running = false;
-//        }
-//        //check if head touches bottom border
-//        if(y[0] > SCREEN_HEIGHT) {
-//            running = false;
-//        }
-//
-//        if(!running) {
-//            timer.stop();
-//        }
-//    }
+
     public void gameOver(Graphics g) {
         //Score
         g.setColor(Color.red);
@@ -201,7 +140,7 @@ public class GamePanel extends JPanel implements ActionListener{
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (playerSnake.isAlive() && aiSnake.isAlive()) {
+        if (playerSnake.isAlive()) {
             repaint();
         }
     }
@@ -211,16 +150,24 @@ public class GamePanel extends JPanel implements ActionListener{
         public void keyPressed(KeyEvent e) {
             switch(e.getKeyCode()) {
                 case KeyEvent.VK_LEFT:
-                    playerSnake.changeDirection('L');
+                    if(playerSnake.getDirection() != 'R' && playerSnake.getY(0) != playerSnake.getY(1)) {
+                        playerSnake.setDirection('L');
+                    }
                     break;
                 case KeyEvent.VK_RIGHT:
-                    playerSnake.changeDirection('R');
+                    if(playerSnake.getDirection()  != 'L' && playerSnake.getY(0) != playerSnake.getY(1)) {
+                        playerSnake.setDirection('R');
+                    }
                     break;
                 case KeyEvent.VK_UP:
-                    playerSnake.changeDirection('U');
+                    if(playerSnake.getDirection()  != 'D' && playerSnake.getX(0) != playerSnake.getX(1)) {
+                        playerSnake.setDirection('U');
+                    }
                     break;
                 case KeyEvent.VK_DOWN:
-                    playerSnake.changeDirection('D');
+                    if(playerSnake.getDirection()  != 'U' && playerSnake.getX(0) != playerSnake.getX(1)) {
+                        playerSnake.setDirection('D');
+                    }
                     break;
             }
         }

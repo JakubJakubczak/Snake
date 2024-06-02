@@ -72,7 +72,9 @@ public class SnakeAI extends Thread {
         if (x[0] == apple.getX() && y[0] == apple.getY()) {
             bodyParts++;
             score++;
-            apple.generateNewPosition(boardWidth, boardHeight, unitSize);
+            // ******************
+            // zakomentowane, bo byl mocno zmieniany program, bez udziału snakeAI
+            //apple.generateNewPosition(boardWidth, boardHeight, unitSize);
         }
     }
 
