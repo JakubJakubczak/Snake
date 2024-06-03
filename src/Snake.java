@@ -160,7 +160,7 @@ public class Snake extends Thread {
         while (running) {
             move();
             try {
-                Thread.sleep(75); // Control snake speed
+                Thread.sleep(150); // Control snake speed
             } catch (InterruptedException e) {
                 running = false;
             }

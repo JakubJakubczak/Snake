@@ -16,7 +16,7 @@ public class GamePanel extends JPanel implements ActionListener{
     private Frog frog;
     private Snake playerSnake;
     private Obstacle obstacle;
-    //private SnakeAI aiSnake;
+    private SnakeAI aiSnake;
     Timer timer;
     Random random;
     JButton backToMenu;
@@ -29,18 +29,19 @@ public class GamePanel extends JPanel implements ActionListener{
         this.addKeyListener(new MyKeyAdapter());
         startGame();
     }
+    
     public void startGame() {
         apple = new Apple(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE, board);
         frog = new Frog(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE, board);
         playerSnake = new Snake(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE, board);
         obstacle = new Obstacle(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE, board);
-        //aiSnake = new SnakeAI(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE, apple, frog, playerSnake);
-
+        aiSnake = new SnakeAI(SCREEN_WIDTH, SCREEN_HEIGHT, UNIT_SIZE, apple, frog, playerSnake, board);
+    
         apple.start();
         new Thread(frog).start();
         playerSnake.start();
-        //aiSnake.start();
-
+        aiSnake.start();
+    
         timer = new Timer(DELAY,this);
         timer.start();
     }
@@ -54,6 +55,7 @@ public class GamePanel extends JPanel implements ActionListener{
             apple.draw(g);
             frog.draw(g);
             playerSnake.draw(g);
+            aiSnake.draw(g);
 
 //            // Print the top border
 //            System.out.print("  "); // Space for row labels
