@@ -70,14 +70,13 @@ public class Snake extends Thread {
         if(!running){
             return;
         }
-        if(checkApple()){
+        if(checkApple() || checkFrog()){
             updateSnake();
         }
         else{
             board[endOfSnakeX][endOfSnakeY] = 0;
             updateSnake();
         };
-        //checkFrog();
     }
 
     public int getBodyParts() {
@@ -113,12 +112,13 @@ public class Snake extends Thread {
         else return false;
     }
 
-    private void checkFrog() {
-//        if (x[0] == frog.getX() && y[0] == frog.getY()) {
-//            bodyParts++;
-//            score++;
-//            frog.generateNewPosition();
-//        }
+    private boolean checkFrog() {
+        if (board[x[0]][y[0]] == 2) {
+            bodyParts++;
+            score++;
+            return true;
+        }
+        else return false;
     }
 
     private void checkCollisions() {

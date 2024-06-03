@@ -26,13 +26,15 @@ public class Apple extends Thread{
             y = random.nextInt(boardHeight / unitSize);
             // **********8
             // dodać, żeby jabłko się nie respiło na przeszkodzie lub w którymś wężu - to w check collision
-//          if(!CheckCollision(board)) break;
-            board[x][y] = 1;
-            break;
+            if(!CheckField(x,y)) break;
         }
+        board[x][y] = 1;
     }
-    public boolean CheckCollision(int[][] board) {
-        return false;
+    public boolean CheckField(int x, int y) {
+        if(board[x][y] == 0)
+            return false;
+        else
+            return true;
     }
 
     public int getX() { return x; }
