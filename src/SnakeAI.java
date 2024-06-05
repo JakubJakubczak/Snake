@@ -101,6 +101,7 @@ public class SnakeAI extends Thread {
         if (board[x[0]][y[0]] == 1) {
             bodyParts++;
             score++;
+            logApplePosition();
             return true;
         } else {
             return false;
@@ -135,15 +136,18 @@ public class SnakeAI extends Thread {
 
     private void decideDirection() {
         if (apple == null) return;
-    
+        
         int appleX = apple.getX() / unitSize;
         int appleY = apple.getY() / unitSize;
-    
+        
+        // Debugowanie pozycji jabłka
+        System.out.println("Apple position in AI: (" + appleX + ", " + appleY + ")");
+        
         int deltaX = appleX - x[0];
         int deltaY = appleY - y[0];
-    
+        
         char newDirection = direction;
-    
+        
         if (Math.abs(deltaX) > Math.abs(deltaY)) {
             if (deltaX > 0 && direction != 'L') {
                 newDirection = 'R';
@@ -157,16 +161,17 @@ public class SnakeAI extends Thread {
                 newDirection = 'U';
             }
         }
-    
+        
         if (willHitWall(newDirection) || willHitSelf(newDirection)) {
             char safeDirection = findSafeDirection();
             if (safeDirection != direction) {
                 newDirection = safeDirection;
             }
         }
-    
+        
         direction = newDirection;
     }
+    
 
     private boolean willHitWall(char dir) {
         int nextX = x[0];
@@ -204,6 +209,13 @@ public class SnakeAI extends Thread {
             }
         }
         return direction; 
+    }
+
+    private void logApplePosition() {
+        if (apple != null) {
+            int appleX = apple.getX() / unitSize;
+            int appleY = apple.getY() / unitSize;
+        }
     }
 
     @Override

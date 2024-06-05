@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.util.Random;
 
-public class Apple extends Thread{
+public class Apple extends Thread {
     private int x, y;
     private int boardWidth, boardHeight, unitSize;
     private int sizeX, sizeY;
@@ -19,47 +19,56 @@ public class Apple extends Thread{
         board[x][y] = 1;
     }
 
-    public void generateNewPosition(int boardWidth, int boardHeight, int unitSize,int[][] board) {
+    public void generateNewPosition(int boardWidth, int boardHeight, int unitSize, int[][] board) {
         Random random = new Random();
-        while(true) {
+        while (true) {
             x = random.nextInt(boardWidth / unitSize);
             y = random.nextInt(boardHeight / unitSize);
-            // **********8
-            // dodać, żeby jabłko się nie respiło na przeszkodzie lub w którymś wężu - to w check collision
-            if(!CheckField(x,y)) break;
+            // Upewnij się, że jabłko nie pojawia się na przeszkodzie lub w wężu
+            if (!CheckField(x, y)) break;
         }
         board[x][y] = 1;
-    }
-    public boolean CheckField(int x, int y) {
-        if(board[x][y] == 0)
-            return false;
-        else
-            return true;
+        System.out.println("Apple generated at: (" + x + ", " + y + ")");
     }
 
-    public int getX() { return x; }
-    public int getY() { return y; }
+    public boolean CheckField(int x, int y) {
+        return board[x][y] != 0;
+    }
+
+    public int getX() { 
+        return x * unitSize; 
+    }
+
+    public int getY() { 
+        return y * unitSize; 
+    }
+
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+        board[x][y] = 1; // Aktualizowanie planszy
+    }
 
     public void draw(Graphics g) {
         g.setColor(Color.red);
-        g.fillOval(x*unitSize, y*unitSize, unitSize, unitSize);
+        g.fillOval(x * unitSize, y * unitSize, unitSize, unitSize);
     }
 
-    public boolean IsAppleCollected(int x, int y){
-        if(board[x][y] == 1) return false;
-        else return true;
+    public boolean IsAppleCollected(int x, int y) {
+        return board[x][y] != 1;
     }
 
     @Override
     public void run() {
         while (true) {
-            if(IsAppleCollected(x,y))
+            if (IsAppleCollected(x, y)) {
                 generateNewPosition(boardWidth, boardHeight, unitSize, board);
+            }
             try {
-                Thread.sleep(DELAY); // Frog moves every second
+                Thread.sleep(DELAY); // Apple checks its status every 75ms
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        }
     }
+}
