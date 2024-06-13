@@ -1,5 +1,8 @@
 import java.awt.*;
 
+/**
+ * Klasa reprezentująca węża sterowanego przez sztuczną inteligencję w grze Snake. Wąż AI porusza się po planszy, zbiera jabłka i żaby, oraz unika przeszkód.
+ */
 public class SnakeAI extends Thread {
     private int[] x, y;
     private int bodyParts;
@@ -13,6 +16,17 @@ public class SnakeAI extends Thread {
     private int sizeX, sizeY;
     int[][] board;
 
+    /**
+     * Konstruktor klasy SnakeAI inicjalizujący węża AI na planszy.
+     * 
+     * @param boardWidth Szerokość planszy.
+     * @param boardHeight Wysokość planszy.
+     * @param unitSize Rozmiar jednostki planszy.
+     * @param apple Obiekt klasy Apple reprezentujący jabłko na planszy.
+     * @param frog Obiekt klasy Frog reprezentujący żabę na planszy.
+     * @param playerSnake Obiekt klasy Snake reprezentujący węża gracza.
+     * @param board Dwuwymiarowa tablica reprezentująca planszę.
+     */
     public SnakeAI(int boardWidth, int boardHeight, int unitSize, Apple apple, Frog frog, Snake playerSnake, int[][] board) {
         this.boardWidth = boardWidth;
         this.boardHeight = boardHeight;
@@ -32,6 +46,11 @@ public class SnakeAI extends Thread {
         initSnake();
     }
 
+    /**
+     * Rysuje węża AI na planszy.
+     * 
+     * @param g Obiekt Graphics do rysowania.
+     */
     public void draw(Graphics g) {
         for (int i = 0; i < bodyParts; i++) {
             if (i == 0) {
@@ -44,6 +63,9 @@ public class SnakeAI extends Thread {
         }
     }
 
+    /**
+     * Inicjalizuje pozycję początkową węża AI.
+     */
     private void initSnake() {
         for (int i = 0; i < bodyParts; i++) {
             x[i] = (bodyParts - i - 1);
@@ -52,12 +74,18 @@ public class SnakeAI extends Thread {
         }
     }
 
+    /**
+     * Aktualizuje pozycję węża AI na planszy.
+     */
     private void updateSnake() {
         for (int i = 0; i < bodyParts; i++) {
             board[x[i]][y[i]] = -2;
         }
     }
 
+    /**
+     * Porusza wężem AI w kierunku zgodnym z bieżącym kierunkiem.
+     */
     private void move() {
         int endOfSnakeX = x[bodyParts - 1];
         int endOfSnakeY = y[bodyParts - 1];
@@ -85,18 +113,38 @@ public class SnakeAI extends Thread {
         }
     }
 
+    /**
+     * Zwraca liczbę części ciała węża AI.
+     * 
+     * @return Liczba części ciała węża AI.
+     */
     public int getBodyParts() {
         return bodyParts;
     }
 
+    /**
+     * Zwraca wynik węża AI.
+     * 
+     * @return Wynik węża AI.
+     */
     public int getScore() {
         return score;
     }
 
+    /**
+     * Sprawdza, czy gra z wężem AI nadal trwa.
+     * 
+     * @return true, jeśli gra trwa, false w przeciwnym razie.
+     */
     public boolean getRunning() {
         return running;
     }
 
+    /**
+     * Sprawdza, czy wąż AI zjadł jabłko.
+     * 
+     * @return true, jeśli wąż AI zjadł jabłko, false w przeciwnym razie.
+     */
     private boolean checkApple() {
         if (board[x[0]][y[0]] == 1) {
             bodyParts++;
@@ -108,6 +156,11 @@ public class SnakeAI extends Thread {
         }
     }
 
+    /**
+     * Sprawdza, czy wąż AI zjadł żabę.
+     * 
+     * @return true, jeśli wąż AI zjadł żabę, false w przeciwnym razie.
+     */
     private boolean checkFrog() {
         if (board[x[0]][y[0]] == 2) {
             bodyParts++;
@@ -118,6 +171,9 @@ public class SnakeAI extends Thread {
         }
     }
 
+    /**
+     * Sprawdza kolizje węża AI z przeszkodami i ścianami planszy.
+     */
     private void checkCollisions() {
         if (x[0] < 0 || x[0] >= sizeX || y[0] < 0 || y[0] >= sizeY) {
             running = false;
@@ -134,6 +190,9 @@ public class SnakeAI extends Thread {
         }
     }
 
+    /**
+     * Decyduje o kierunku ruchu węża AI w oparciu o pozycję jabłka.
+     */
     private void decideDirection() {
         if (apple == null) return;
         
@@ -171,8 +230,13 @@ public class SnakeAI extends Thread {
         
         direction = newDirection;
     }
-    
 
+    /**
+     * Sprawdza, czy wąż AI uderzy w ścianę, jeśli będzie kontynuował ruch w zadanym kierunku.
+     * 
+     * @param dir Kierunek ruchu do sprawdzenia.
+     * @return true, jeśli wąż AI uderzy w ścianę, false w przeciwnym razie.
+     */
     private boolean willHitWall(char dir) {
         int nextX = x[0];
         int nextY = y[0];
@@ -187,6 +251,12 @@ public class SnakeAI extends Thread {
         return nextX < 0 || nextX >= sizeX || nextY < 0 || nextY >= sizeY;
     }
 
+    /**
+     * Sprawdza, czy wąż AI uderzy w siebie, jeśli będzie kontynuował ruch w zadanym kierunku.
+     * 
+     * @param dir Kierunek ruchu do sprawdzenia.
+     * @return true, jeśli wąż AI uderzy w siebie, false w przeciwnym razie.
+     */
     private boolean willHitSelf(char dir) {
         int nextX = x[0];
         int nextY = y[0];
@@ -201,6 +271,11 @@ public class SnakeAI extends Thread {
         return board[nextX][nextY] < 0;
     }
 
+    /**
+     * Znajduje bezpieczny kierunek ruchu dla węża AI, unikający kolizji.
+     * 
+     * @return Bezpieczny kierunek ruchu.
+     */
     private char findSafeDirection() {
         char[] directions = {'U', 'D', 'L', 'R'};
         for (char dir : directions) {
@@ -211,6 +286,9 @@ public class SnakeAI extends Thread {
         return direction; 
     }
 
+    /**
+     * Loguje pozycję jabłka.
+     */
     private void logApplePosition() {
         if (apple != null) {
             int appleX = apple.getX() / unitSize;
@@ -218,6 +296,9 @@ public class SnakeAI extends Thread {
         }
     }
 
+    /**
+     * Główna pętla działania węża AI, która decyduje o kierunku i porusza wężem co 150 ms.
+     */
     @Override
     public void run() {
         while (apple == null) {
@@ -229,7 +310,7 @@ public class SnakeAI extends Thread {
         }
 
         long lastActionTime100ms = System.currentTimeMillis();
-        long currentTime = System.currentTimeMillis();
+        long currentTime;
         while (running) {
             currentTime = System.currentTimeMillis();
 
